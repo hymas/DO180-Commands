@@ -2,33 +2,68 @@ lab manage-lifecycle start
 
 podman login registry.redhat.io
 
-podman run --name mysql-db \
-> registry.redhat.io/rhel8/mysql-80:1
+podman run --name mysql-db registry.redhat.io/rhel8/mysql-80:1
 
 podman run --name mysql \
-> -d -e MYSQL_USER=user1 -e MYSQL_PASSWORD=mypa55 \
-> -e MYSQL_DATABASE=items -e MYSQL_ROOT_PASSWORD=r00tpa55 \
-> registry.redhat.io/rhel8/mysql-80:1
+    -d -e MYSQL_USER=user1 -e MYSQL_PASSWORD=mypa55 \
+    -e MYSQL_DATABASE=items -e MYSQL_ROOT_PASSWORD=r00tpa55 \
+    registry.redhat.io/rhel8/mysql-80:1
 
 podman ps --format="{{.ID}} {{.Names}} {{.Status}}"
 
 podman cp \
-> /home/student/DO180/labs/manage-lifecycle/db.sql mysql:/
+    /home/student/DO180/labs/manage-lifecycle/db.sql mysql:/
 
 podman exec mysql /bin/bash \
-> -c 'mysql -uuser1 -pmypa55 items < /db.sql'
+    -c 'mysql -uuser1 -pmypa55 items < /db.sql'
 
  podman run --name mysql-2 \
-> -it registry.redhat.io/rhel8/mysql-80:1 /bin/bash
+    -it registry.redhat.io/rhel8/mysql-80:1 /bin/bash
 
 mysql -uroot
 
 exit
 
 podman ps -a \
-> --format="{{.ID}} {{.Names}} {{.Status}}"
+    --format="{{.ID}} {{.Names}} {{.Status}}"
 
- podman exec mysql /bin/bash \
-> -c 'mysql -uuser1 -pmypa55 -e "select * from items.Projects;"'
+podman exec mysql /bin/bash \
+    -c 'mysql -uuser1 -pmypa55 -e "select * from items.Projects;"'
 
 lab manage-lifecycle finish
+
+-------------------------------------------
+
+lab manage-storage start
+
+mkdir -pv /home/student/local/mysql
+
+sudo semanage fcontext -a \
+    -t container_file_t '/home/student/local/mysql(/.*)?'
+
+sudo restorecon -R /home/student/local/mysql   
+
+ls -ldZ /home/student/local/mysql
+
+podman unshare chown 27:27 /home/student/local/mysql
+
+podman login registry.redhat.io
+
+podman pull registry.redhat.io/rhel8/mysql-80:1
+
+podman run --name persist-db \
+    -d -v /home/student/local/mysql:/var/lib/mysql/data \
+    -e MYSQL_USER=user1 -e MYSQL_PASSWORD=mypa55 \
+    -e MYSQL_DATABASE=items -e MYSQL_ROOT_PASSWORD=r00tpa55 \
+    registry.redhat.io/rhel8/mysql-80:1
+
+ podman ps --format="{{.ID}} {{.Names}} {{.Status}}"
+
+ls -ld /home/student/local/mysql/items  
+
+podman unshare ls -ld /home/student/local/mysql/items
+
+lab manage-storage finish
+
+-----------------------------------------------------------
+
