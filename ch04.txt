@@ -8,7 +8,7 @@ podman run -d --name official-httpd \
 
 podman exec -it official-httpd /bin/bash
 
-bash-4.4# echo "DO180 Page" > /var/www/html/do180.html
+echo "DO180 Page" > /var/www/html/do180.html
 
 exit
 
