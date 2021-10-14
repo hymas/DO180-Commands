@@ -146,6 +146,8 @@ show databases;
 
 use items;
 
+show tables;
+
 SELECT * FROM Item;
 
 exit
@@ -157,9 +159,13 @@ mysql -uuser1 -h workstation.lab.example.com \
 
 insert into Item (description, done) values ('Finished lab', 1);
 
+exit
+
 podman rm mysql-1
 
 lab manage-review grade
 
 lab manage-review finish
+
+------------------------------------------------------------
 
