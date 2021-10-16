@@ -89,6 +89,8 @@ git checkout master
 
 git checkout -b s2i
 
+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
+
 git push -u origin s2i
 
 Open the index.php file in the /home/student/DO180-apps/php-helloworld folder:
