@@ -39,11 +39,39 @@ Close the terminal and return to the previous one. Finish the port forwarding pr
 
 oc delete project ${RHT_OCP4_DEV_USER}-mysql-openshift
 
+lab openshift-resources finish
 
+------------------------------------------------------------------
 
+lab openshift-routes start
 
+source /usr/local/etc/ocp4.config
 
+oc login -u ${RHT_OCP4_DEV_USER} -p \
+    ${RHT_OCP4_DEV_PASSWORD} ${RHT_OCP4_MASTER_API}
 
+oc new-project ${RHT_OCP4_DEV_USER}-route
+
+oc new-app \
+    --docker-image=quay.io/redhattraining/php-hello-dockerfile \
+    --name php-helloworld
+
+oc get pods -w
+
+oc logs -f php-helloworld-74bb86f6cb-zt6wl
+
+oc describe svc/php-helloworld
+
+oc expose svc/php-helloworld
+
+oc describe route
+
+curl \
+    php-helloworld-${RHT_OCP4_DEV_USER}-route.${RHT_OCP4_WILDCARD_DOMAIN}
+
+oc delete route/php-helloworld
+
+lab openshift-routes finish
 
 
 
