@@ -1,0 +1,58 @@
+
+lab multicontainer-design start
+
+podman login registry.redhat.io
+
+vi /home/student/DO180/labs/multicontainer-design/deploy/nodejs/Containerfile
+
+ip -br addr list | grep eth0
+
+vi /home/student/DO180/labs/multicontainer-design/deploy/nodejs/nodejs-source/models/db.js
+
+cd ~/DO180/labs/multicontainer-design/deploy/nodejs
+
+./build.sh
+
+podman images \
+    --format "table {{.ID}} {{.Repository}} {{.Tag}}"
+
+vi /home/student/DO180/labs/multicontainer-design/deploy/nodejs/networked/run.sh
+
+podman run -d --name mysql -e MYSQL_DATABASE=items -e MYSQL_USER=user1 \
+    -e MYSQL_PASSWORD=mypa55 -e MYSQL_ROOT_PASSWORD=r00tpa55 \
+    -v $PWD/work/data:/var/lib/mysql/data \
+    -p 30306:3306 \
+    registry.redhat.io/rhel8/mysql-80:1
+
+podman run -d --name todoapi -e MYSQL_DATABASE=items -e MYSQL_USER=user1 \
+    -e MYSQL_PASSWORD=mypa55 \
+    -p 30080:30080 \
+    do180/todonodejs
+
+diff /home/student/DO180/solutions/multicontainer-design/deploy/nodejs/networked/run.sh \
+    /home/student/DO180/labs/multicontainer-design/deploy/nodejs/networked/run.sh
+
+cd \
+    /home/student/DO180/labs/multicontainer-design/deploy/nodejs/networked
+
+./run.sh
+
+podman ps \
+    --format="table {{.ID}} {{.Names}} {{.Image}} {{.Status}}"
+
+mysql -uuser1 -h 172.25.250.9 \
+    -pmypa55 -P30306 items < \
+    /home/student/DO180/labs/multicontainer-design/deploy/nodejs/networked/db.sql
+
+podman exec -it todoapi env
+
+curl -w "\n" \
+    http://127.0.0.1:30080/todo/api/items/1
+
+cd ~
+
+lab multicontainer-design finish
+
+
+
+
