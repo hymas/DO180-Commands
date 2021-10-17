@@ -89,8 +89,6 @@ git checkout master
 
 git checkout -b s2i
 
-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
-
 git push -u origin s2i
 
 Open the index.php file in the /home/student/DO180-apps/php-helloworld folder:
@@ -153,6 +151,48 @@ curl -s \
 lab openshift-s2i finish
 
 ------------------------------------------------------------------
+
+lab openshift-webconsole start
+
+cd ~/DO180-apps
+
+git checkout master
+
+git checkout -b console
+
+git push -u origin console
+
+Open the index.php file in the /home/student/DO180-apps/php-helloworld folder:
+
+<?php
+print "Hello, World! php version is " . PHP_VERSION . "\n";
+?>
+
+
+source /usr/local/etc/ocp4.config
+
+echo $RHT_OCP4_WILDCARD_DOMAIN
+
+...
+
+cd ~/DO180-apps/php-helloworld
+
+vim index.php
+at index.php
+<?php
+print "Hello, World! php version is " . PHP_VERSION . "\n";
+print "A change is in the air!\n";
+?>
+
+git add index.php
+
+git commit -m 'updated app'
+
+git push origin console
+
+lab openshift-webconsole finish
+
+
 
 
 
