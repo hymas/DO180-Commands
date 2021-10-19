@@ -3,6 +3,9 @@ git config --global credential.helper cache
 
 lab-configure
 
+API Endpoint: https://api.eu46.prod.nextcle.com:6443
+
+
 https://github.com/RedHatTraining/DO180-apps
 
 git clone https://github.com/_yourgituser_/DO180-apps
