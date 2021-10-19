@@ -92,3 +92,47 @@ http://todoapi-${RHT_OCP4_DEV_USER}-application.${RHT_OCP4_WILDCARD_DOMAIN}/todo
 
 lab multicontainer-application finish
 
+---------------------------------------------------------------------------
+
+lab multicontainer-openshift start
+
+source /usr/local/etc/ocp4.config
+
+oc login -u ${RHT_OCP4_DEV_USER} \
+    -p ${RHT_OCP4_DEV_PASSWORD} ${RHT_OCP4_MASTER_API}
+
+oc new-project ${RHT_OCP4_DEV_USER}-template
+
+cd /home/student/DO180/labs/multicontainer-openshift
+[student@workstation multicontainer-openshift]$ oc process \
+    -f todo-template.json \
+    | oc create -f -
+
+oc get pods -w
+
+oc port-forward mysql 3306:3306
+
+cd /home/student/DO180/labs/multicontainer-openshift
+
+mysql -uuser1 \
+    -h 127.0.0.1 -pmypa55 -P3306 items < db.sql
+
+oc expose service todoapi
+
+oc status | grep -o "http:.*com"
+
+curl -w "\n" \
+    $(oc status | grep -o "http:.*com")/todo/api/items/1
+
+cd ~
+
+http://todoapi-${RHT_OCP4_DEV_USER}-template.${RHT_OCP4_WILDCARD_DOMAIN}/todo/
+
+lab multicontainer-openshift finish
+
+
+
+
+
+
+
