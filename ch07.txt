@@ -132,6 +132,10 @@ lab multicontainer-openshift finish
 
 -------------------------------------------------------------------
 
+lab multicontainer-review start
+
+cd ~/DO180/labs/multicontainer-review
+
 source /usr/local/etc/ocp4.config
 
 oc login -u ${RHT_OCP4_DEV_USER} \
