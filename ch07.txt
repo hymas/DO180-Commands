@@ -144,6 +144,8 @@ oc login -u ${RHT_OCP4_DEV_USER} \
 oc new-project \
     ${RHT_OCP4_DEV_USER}-deploy
 
+podman login registry.redhat.io    
+
 cd images/mysql
 
 podman build -t do180-mysql-80-rhel8 .
